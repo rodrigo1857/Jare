@@ -1,4 +1,5 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ProductImage } from "./product-image.entity";
 
 
 @Entity({ schema: 'core',
@@ -48,23 +49,23 @@ export class Product {
 
 
     //relaciones
-    /*  @OneToMany(
+     @OneToMany(
          () => ProductImage,
-         (productImage) => productImage.product,
+         (productImage) => productImage.id_product,
          { cascade: true,eager:true}
      )
      images?: ProductImage[];
  
  
-     @ManyToOne(
-         () => User,
-         (user) => user.product,
-         {eager:true}
-     )
-     user:User;
+    //  @ManyToOne(
+    //      () => User,
+    //      (user) => user.product,
+    //      {eager:true}
+    //  )
+    //  user:User;
  
  
-     @BeforeInsert()
+    /*  @BeforeInsert()
      checkSlugInsert() {
          if (!this.slug) {
              this.slug = this.title;
@@ -78,4 +79,5 @@ export class Product {
          this.slug = this.slug.toLocaleLowerCase().replaceAll(' ', '_').replaceAll("'", "")
      } */
 }
+
 

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ProductsModule } from './products/products.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './products/entities/product.entity';
+import { Product } from './core/products/entities/product.entity';
+import { ProductsModule } from './core/products/products.module';
+import { ProductImage } from './core/products/entities/product-image.entity';
 
 
 @Module({
@@ -24,7 +25,7 @@ import { Product } from './products/entities/product.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         autoLoadEntities: false,
-        entities: [Product],
+        entities: [Product,ProductImage],
         synchronize: false,
       }),
     }),
