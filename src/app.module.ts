@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './core/products/entities/product.entity';
 import { ProductsModule } from './core/products/products.module';
 import { ProductImage } from './core/products/entities/product-image.entity';
+import { ProductCategory } from './core/products/entities/product-category.entity';
 
 
 @Module({
@@ -25,7 +26,7 @@ import { ProductImage } from './core/products/entities/product-image.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         autoLoadEntities: false,
-        entities: [Product,ProductImage],
+        entities: [Product,ProductImage,ProductCategory],
         synchronize: false,
       }),
     }),

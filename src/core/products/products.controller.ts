@@ -19,7 +19,8 @@ export class ProductsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+    console.log(id);
+    return this.productsService.findOne(id);
   }
 
   @Patch(':id')

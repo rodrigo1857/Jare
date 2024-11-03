@@ -5,6 +5,7 @@ import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductImage } from './entities/product-image.entity';
+import { ProductCategory } from './entities/product-category.entity';
 
 
 
@@ -18,30 +19,38 @@ export class ProductsService {
   
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
-  ) {}  
 
+    @InjectRepository(ProductCategory)
+    private readonly productCategoryRepository: Repository<ProductCategory>,
+  ) {}  
 
   async create(createProductDto: CreateProductDto) {
     try {
-       
-        console.log('CreateProductDto:', createProductDto); // Verificar que title está presente
-        
-        const { images = [], ...productDetail } = createProductDto;
+        const { images = [], category, ...productDetail } = createProductDto;
 
-        // Verificar que productDetail incluye title
-        console.log('Product Details:', productDetail); 
+        // Busca la categoría
+        const productCategory = await this.productCategoryRepository.findOne({
+            where: { category: category }
+        });
 
+        // Verifica si la categoría existe
+        if (!productCategory) {
+            throw new BadRequestException('Product category does not exist.');
+        }
+
+        // Crea el producto
         const product = this.productRepository.create({
             ...productDetail,
+            id_type_product: productCategory.id , 
             images: images.map(image => this.productImageRepository.create({ url: image }))
         });
 
-        console.log('Product before save:', product); // Verificar el objeto antes de guardarlo
+        console.log('Product before save:', product); 
 
         await this.productRepository.save(product);
         return { message: 'Product created successfully' };
     } catch (error) {
-        this.logger.error('Error creating product:', error.message); // Más información de depuración
+        this.logger.error('Error creating product:', error.message);
         this.handleExceptions(error);
     }
 }
@@ -49,10 +58,11 @@ export class ProductsService {
 
 
   findAll() {
-    return `This action returns all products`;
+    const products = this.productRepository.find();
+    return products;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} product`;
   }
 

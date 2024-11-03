@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from "./product-image.entity";
+import { ProductCategory } from "./product-category.entity";
 
 
 @Entity({ schema: 'core',
@@ -56,7 +57,12 @@ export class Product {
      )
      images?: ProductImage[];
  
- 
+    
+     
+     @Column({ type: 'int' })
+     id_type_product: number;
+
+
     //  @ManyToOne(
     //      () => User,
     //      (user) => user.product,
