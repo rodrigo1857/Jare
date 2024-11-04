@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
@@ -26,7 +26,7 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     try {
-        const { images = [], category, ...productDetail } = createProductDto;
+        const { images = [], category, title, ...productDetail } = createProductDto;
 
         // Busca la categoría
         const productCategory = await this.productCategoryRepository.findOne({
@@ -38,9 +38,12 @@ export class ProductsService {
             throw new BadRequestException('Product category does not exist.');
         }
 
+        
+
         // Crea el producto
         const product = this.productRepository.create({
             ...productDetail,
+            title: title.replaceAll(" ","-"),
             id_type_product: productCategory.id , 
             images: images.map(image => this.productImageRepository.create({ url: image }))
         });
@@ -61,9 +64,13 @@ export class ProductsService {
     const products = this.productRepository.find();
     return products;
   }
-
-  findOne(id: string) {
-    return `This action returns a #${id} product`;
+  
+  async findOne(id: string): Promise<Product> {
+  let product: Product;
+  product = await this.productRepository.findOneBy({ title: id.toLowerCase() });
+  if (!product)
+    throw new NotFoundException(`Productor with id ${id} not found`)
+    return  product;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {

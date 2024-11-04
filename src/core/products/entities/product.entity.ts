@@ -1,6 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from "./product-image.entity";
-import { ProductCategory } from "./product-category.entity";
 
 
 @Entity({ schema: 'core',
@@ -8,9 +7,8 @@ import { ProductCategory } from "./product-category.entity";
 export class Product {
 
 
-    @PrimaryGeneratedColumn()
-    id: number;
-
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column('text', {
         unique: true,
