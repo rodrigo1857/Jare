@@ -73,12 +73,13 @@ export class ProductsService {
     return  product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
+  update(id: string, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    const product = await this.findOne(id);
+    await this.productRepository.remove(product);
   }
 
 
