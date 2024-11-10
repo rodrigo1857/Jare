@@ -73,8 +73,14 @@ export class ProductsService {
     return  product;
   }
 
-  update(id: string, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+   const { images = [],...toUpdate } = updateProductDto;
+   const product = await this.productRepository.findOneBy({ title: id.toLowerCase() });
+
+   
+   const updateProduct = await this.productRepository.preload({id:product.id, ...toUpdate});
+   console.log(updateProduct)
+
   }
 
   async remove(id: string) {
