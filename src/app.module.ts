@@ -5,6 +5,7 @@ import { Product } from './core/products/entities/product.entity';
 import { ProductsModule } from './core/products/products.module';
 import { ProductImage } from './core/products/entities/product-image.entity';
 import { ProductCategory } from './core/products/entities/product-category.entity';
+import { FilesModule } from './files/files.module';
 
 
 @Module({
@@ -33,7 +34,11 @@ import { ProductCategory } from './core/products/entities/product-category.entit
     
     
     
-    ProductsModule],
+    ProductsModule,
+    
+    
+    
+    FilesModule],
   controllers: [],
   providers: [],
 })
