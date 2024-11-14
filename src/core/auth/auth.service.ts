@@ -1,26 +1,85 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { CreateAuthDto } from './dto/create-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import { JwtPayload } from './entities/interface';
+import { LoginUserDto } from './dto/login-user.dto';
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+
+
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
+    private readonly jwtService: JwtService,
+  ){}
+  async create(createAuthDto: CreateAuthDto) {
+    try {
+      const {password, ...userData} = createAuthDto;
+
+      const user = this.userRepository.create({
+        ...userData,
+        password: bcrypt.hashSync(password,10)
+      }
+        );
+      await this.userRepository.save(user); 
+      delete user.password;
+      return {
+        ...user,
+        token: this.getJwtToken({id:user.id})
+      };
+    } catch (error) {
+      this.HandleError(error)
+    }
+    
   }
 
-  findAll() {
-    return `This action returns all auth`;
+
+  async login(loginUserDto: LoginUserDto) {
+
+    const {email,password} = loginUserDto;
+    const user = await this.userRepository.findOne({
+      where:{email},
+      select:{email:true,password:true, id:true}
+    });
+
+    if(!user){
+      throw new UnauthorizedException('Usuario no encontrado ')
+    }
+
+    if(!bcrypt.compareSync(password,user.password))
+      throw new UnauthorizedException('Credenciales no son correctas por la contraseña')
+    
+    return {
+      ...user,
+      token: this.getJwtToken({id:user.id})
+    };
+ 
+}
+  
+  private getJwtToken(payload:JwtPayload){  
+    const token = this.jwtService.sign(payload);
+    return token;
+
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  private HandleError(error:any): never{
+    if(error.code = '23505'){
+      throw new BadRequestException(error.detail)      
+  }
+  throw new InternalServerErrorException('Error inesperado') 
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
+   checkAuthStatus(user: User) {
+    return {
+      ...user,
+      token: this.getJwtToken({id:user.id})
+    }
+}
+
 }

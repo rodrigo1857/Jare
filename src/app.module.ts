@@ -6,6 +6,8 @@ import { ProductsModule } from './core/products/products.module';
 import { ProductImage } from './core/products/entities/product-image.entity';
 import { ProductCategory } from './core/products/entities/product-category.entity';
 import { FilesModule } from './files/files.module';
+import { AuthModule } from './core/auth/auth.module';
+import { User } from './core/auth/entities/user.entity';
 
 
 @Module({
@@ -27,17 +29,12 @@ import { FilesModule } from './files/files.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         autoLoadEntities: false,
-        entities: [Product,ProductImage,ProductCategory],
+        entities: [Product,ProductImage,ProductCategory,User],
         synchronize: false,
       }),
     }),
-    
-    
-    
     ProductsModule,
-    
-    
-    
+    AuthModule,
     FilesModule],
   controllers: [],
   providers: [],

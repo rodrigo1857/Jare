@@ -14,10 +14,9 @@ export class CreateAuthDto {
     @MinLength(6)
     @MaxLength(50)
     @Matches(
-        /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/, {
         message: 'The password must have a Uppercase, lowercase letter and a number'
     })
     password: string;
-
 
 }
