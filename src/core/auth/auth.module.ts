@@ -19,7 +19,7 @@ import { PassportModule } from '@nestjs/passport';
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (ConfigService:ConfigService) => {
-        // console.log('JWT SECRET-Config-service', ConfigService.get('JWT_SECRET')) 
+        //console.log('JWT SECRET-Config-service', ConfigService.get('JWT_SECRET')) 
         // console.log('JWT SECRET-Variables-entorno', process.env.JWT_SECRET)
         return {
           secret: ConfigService.get('JWT_SECRET'),
@@ -29,5 +29,6 @@ import { PassportModule } from '@nestjs/passport';
         }
       }
     })],
+    exports: [AuthService, TypeOrmModule, JwtModule,PassportModule,JwtModule]
 })
 export class AuthModule {}

@@ -2,27 +2,37 @@ import { Product } from "src/core/products/entities/product.entity"
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 
-@Entity('User')
+@Entity({
+    schema:'core',
+    name:'tp_user'
+})
 export class User {
 
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn()
     id: string 
 
     @Column('text',{
         unique: true}
     )
-    email: string
+    username: string
     
     @Column('text',{select: false})
     password: string
 
-    @Column('text')
-    fullName: string
+    @Column('integer',{
+        default: 2 // 2 = user, 1= admin
+    })
+    id_type_user: number
 
     @Column('bool',{
         default: true
     })
-    isActive: boolean
+    isactive: boolean
+
+    @Column('text',{
+        unique: true}
+    )
+    token_app: string
 
     @Column('text', {
         array: true,
@@ -38,7 +48,7 @@ export class User {
 
     @BeforeInsert()
     checkFieldsBeforeInsert(){
-        this.email = this.email.trim().toLowerCase()
+        this.username = this.username.trim().toLowerCase()
     }
 
     @BeforeUpdate()

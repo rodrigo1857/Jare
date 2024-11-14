@@ -26,6 +26,7 @@ export class AuthService {
         password: bcrypt.hashSync(password,10)
       }
         );
+      console.log(user);
       await this.userRepository.save(user); 
       delete user.password;
       return {
@@ -41,10 +42,10 @@ export class AuthService {
 
   async login(loginUserDto: LoginUserDto) {
 
-    const {email,password} = loginUserDto;
+    const {username,password} = loginUserDto;
     const user = await this.userRepository.findOne({
-      where:{email},
-      select:{email:true,password:true, id:true}
+      where:{username},
+      select:{username:true,password:true, id:true}
     });
 
     if(!user){
@@ -63,11 +64,13 @@ export class AuthService {
   
   private getJwtToken(payload:JwtPayload){  
     const token = this.jwtService.sign(payload);
+    console.log(token);
     return token;
 
   }
 
   private HandleError(error:any): never{
+    console.log(error);
     if(error.code = '23505'){
       throw new BadRequestException(error.detail)      
   }

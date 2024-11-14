@@ -3,7 +3,7 @@ import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 export class LoginUserDto {
 
     @IsString()
-    email:string;
+    username:string;
     
 
     @IsString()
