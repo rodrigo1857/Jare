@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, UploadedFile, UseInterceptors, BadRequestException, Logger, Res } from '@nestjs/common';
+import { Controller, Get, Post, Param, UploadedFile, UseInterceptors, BadRequestException, Logger, Res, Req } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileFilter ,fileNamer} from './helpers/index';
@@ -39,13 +39,17 @@ export class FilesController {
       filename: fileNamer
     })
   }))
-  uploadProducImage(@UploadedFile()file: Express.Multer.File){
+  uploadProducImage(@UploadedFile()file: Express.Multer.File,@Req() req){
     Logger.log('===== CARGANDO EL ARCHIVO=== ');
-    if(!file){
+    if (req['fileValidationError']) {
+      throw new BadRequestException(req['fileValidationError']);
+    }
+
+    if (!file) {
       throw new BadRequestException('Make sure that file is an image');
     }
 
-    const secureUrl = `${this.configService.get('HOST_API')}/files/product/${file.filename}`;
+    const secureUrl = `${this.configService.get('HOST_API')}/files/products/${file.filename}`;
     return {
       secureUrl,
     };
