@@ -19,7 +19,7 @@ export class ProductImage{
           onDelete:'CASCADE'  
         }
     )
-    @JoinColumn({ name: 'id_product' }) 
-    id_product: Product
+    @JoinColumn({ name: 'id_image' , referencedColumnName: 'id_images' }) // referenciar a otra columna que no sea la llave primaria 
+    id_image: Product
 
 }

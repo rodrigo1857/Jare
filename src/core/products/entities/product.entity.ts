@@ -7,8 +7,8 @@ import { ProductImage } from "./product-image.entity";
 export class Product {
 
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column('text', {
         unique: true,
@@ -56,7 +56,7 @@ export class Product {
     //relaciones
      @OneToMany(
          () => ProductImage,
-         (productImage) => productImage.id_product,
+         (productImage) => productImage.id_image,
          { cascade: true,eager:true}
      )
      images?: ProductImage[];
