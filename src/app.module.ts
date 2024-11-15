@@ -10,6 +10,7 @@ import { AuthModule } from './core/auth/auth.module';
 import { User } from './core/auth/entities/user.entity';
 
 
+
 @Module({
   imports: [
     
@@ -35,8 +36,7 @@ import { User } from './core/auth/entities/user.entity';
     }),
     ProductsModule,
     AuthModule,
-    FilesModule],
-  controllers: [],
-  providers: [],
+    FilesModule]
+
 })
 export class AppModule {}

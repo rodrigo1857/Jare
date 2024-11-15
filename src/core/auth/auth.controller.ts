@@ -1,9 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, SetMetadata, UseGuards, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { Auth, GetUser } from './entities/decorators';
+import { Auth, GetUser, RawHeaders } from './entities/decorators';
 import { User } from './entities/user.entity';
+import { ValidRoles } from './entities/interface';
+import { AuthGuard } from '@nestjs/passport';
+import { UserRoleGuard } from './entities/guards/user-role.guard';
+import { IncomingHttpHeaders } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -25,6 +29,53 @@ export class AuthController {
   checkAuthStatus(@GetUser() user: User) {
     console.log(user)
     return this.authService.checkAuthStatus(user);
+  }
+  @Get('private')
+  @UseGuards(AuthGuard())
+  testingPrivateRoute(
+    // @Req() request:Express.Request
+    @GetUser() user: User,
+    @GetUser('email') userEmail: string,
+    @RawHeaders() rawHeaders: string[],
+    @Headers() headers: IncomingHttpHeaders
+  ) {
+    // console.log({user:request.user})
+    console.log({ user })
+    return {
+      ok: true,
+      message: 'Esta es una ruta privada',
+      user,
+      userEmail,
+      rawHeaders,
+      headers
+    }
+  }
+
+ 
+
+  @Get('private2')
+  // @RoleProtected(ValidRoles.superUser,ValidRoles.admin)
+  @SetMetadata('roles', ['admin'])
+  @UseGuards(AuthGuard(),UserRoleGuard)
+  privateRoute2(
+    @GetUser() user: User,
+  ) {
+    return {
+      ok: true,
+      user
+    }
+  }
+
+
+  @Get('private3')
+  @Auth(ValidRoles.admin)
+  privateRoute3(
+    @GetUser() user: User,
+  ) {
+    return {
+      ok: true,
+      user
+    }
   }
 
 }
