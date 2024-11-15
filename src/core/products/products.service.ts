@@ -49,8 +49,6 @@ export class ProductsService {
             
         });
 
-        console.log('Product before save:', product); 
-
         await this.productRepository.save(product);
         return { message: 'Product created successfully' };
     } catch (error) {
@@ -80,8 +78,7 @@ export class ProductsService {
 
    
    const updateProduct = await this.productRepository.preload({id:product.id, ...toUpdate});
-   console.log(updateProduct)
-
+ 
   }
 
   async remove(id: string) {

@@ -27,20 +27,17 @@ export class AuthController {
   @Get('check-auth-status')
   @Auth()
   checkAuthStatus(@GetUser() user: User) {
-    console.log(user)
     return this.authService.checkAuthStatus(user);
   }
   @Get('private')
   @UseGuards(AuthGuard())
   testingPrivateRoute(
-    // @Req() request:Express.Request
     @GetUser() user: User,
     @GetUser('email') userEmail: string,
     @RawHeaders() rawHeaders: string[],
     @Headers() headers: IncomingHttpHeaders
   ) {
-    // console.log({user:request.user})
-    console.log({ user })
+
     return {
       ok: true,
       message: 'Esta es una ruta privada',
@@ -54,7 +51,6 @@ export class AuthController {
  
 
   @Get('private2')
-  // @RoleProtected(ValidRoles.superUser,ValidRoles.admin)
   @SetMetadata('roles', ['admin'])
   @UseGuards(AuthGuard(),UserRoleGuard)
   privateRoute2(

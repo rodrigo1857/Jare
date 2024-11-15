@@ -26,7 +26,6 @@ export class AuthService {
         password: bcrypt.hashSync(password,10)
       }
         );
-      console.log(user);
       await this.userRepository.save(user); 
       delete user.password;
       return {
@@ -69,7 +68,6 @@ export class AuthService {
   }
 
   private HandleError(error:any): never{
-    console.log(error);
     if(error.code = '23505'){
       throw new BadRequestException(error.detail)      
   }
