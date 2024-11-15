@@ -45,7 +45,8 @@ export class ProductsService {
             ...productDetail,
             title: title.replaceAll(" ","-"),
             id_type_product: productCategory.id , 
-            images: images.map(image => this.productImageRepository.create({ url: image }))
+            images: images.map(image => this.productImageRepository.create({ url: image })),
+            
         });
 
         console.log('Product before save:', product); 

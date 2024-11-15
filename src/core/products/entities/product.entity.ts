@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, Generated, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from "./product-image.entity";
 
 
@@ -45,6 +45,12 @@ export class Product {
     @Column('text')
     gender: string;
 
+    @Column({ type: 'int' })
+    id_type_product: number;
+
+    @Column()
+    @Generated('uuid')
+    id_images: string;
 
 
     //relaciones
@@ -54,12 +60,6 @@ export class Product {
          { cascade: true,eager:true}
      )
      images?: ProductImage[];
- 
-    
-     
-     @Column({ type: 'int' })
-     id_type_product: number;
-
 
     //  @ManyToOne(
     //      () => User,

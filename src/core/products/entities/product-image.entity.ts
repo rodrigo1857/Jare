@@ -3,7 +3,7 @@ import { Product } from "./product.entity";
 
 @Entity({
   schema:'core',
-  name:'ts_products_images'})
+  name:'ts_images'})
 export class ProductImage{
     
     @PrimaryGeneratedColumn()
