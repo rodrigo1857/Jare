@@ -20,12 +20,6 @@ export class FilesController {
     @Param('imageName') imageName: string){
     Logger.log('===== OBTENER ARCHIVO === ');
     const path = this.filesService.getStaticProductImage(imageName);
-    //  res.status(403).json({
-    //   ok:false,
-    //   path:path
-    //  })
-    //  return path
-
     res.sendFile(path);
   }
 
@@ -49,7 +43,7 @@ export class FilesController {
       throw new BadRequestException('Make sure that file is an image');
     }
 
-    const secureUrl = `${this.configService.get('HOST_API')}/files/products/${file.filename}`;
+    const secureUrl = `${this.configService.get('HOST_API')}/files/product/${file.filename}`;
     return {
       secureUrl,
     };

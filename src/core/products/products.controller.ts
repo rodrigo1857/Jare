@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Auth } from '../auth/entities/decorators';
 import { ValidRoles } from '../auth/entities/interface';
+import { PaginationDTO } from 'src/common/utils/pagination.dto';
 
 
 
@@ -18,13 +19,13 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() paginationDTO:PaginationDTO) {
+    return this.productsService.findAll(paginationDTO);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return this.productsService.finOnePlain(id);
   }
 
   @Patch(':id')

@@ -6,6 +6,7 @@ import { ProductsService } from './products.service';
 import { ProductImage } from './entities/product-image.entity';
 import { ProductCategory } from './entities/product-category.entity';
 import { AuthModule } from '../auth/auth.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
   controllers: [ProductsController],

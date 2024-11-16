@@ -6,6 +6,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductImage } from './entities/product-image.entity';
 import { ProductCategory } from './entities/product-category.entity';
+import { PaginationDTO } from 'src/common/utils/pagination.dto';
 
 
 
@@ -43,7 +44,7 @@ export class ProductsService {
         // Crea el producto
         const product = this.productRepository.create({
             ...productDetail,
-            title: title.replaceAll(" ","-"),
+            title: (title.toLocaleLowerCase().replaceAll(" ","-")),
             id_type_product: productCategory.id , 
             images: images.map(image => this.productImageRepository.create({ url: image })),
             
@@ -59,9 +60,20 @@ export class ProductsService {
 
 
 
-  findAll() {
-    const products = this.productRepository.find();
-    return products;
+  async findAll(paginationDTO: PaginationDTO) {
+    const{limit = 10 , offset = 0} = paginationDTO;
+    const products = await this.productRepository.find({
+      take : limit,
+      skip : offset,
+      relations : {
+        images:true,
+      }
+    });
+    
+    return products.map(({images,...rest})=>({
+      ...rest,
+      images:images.map(image=>image.url)
+    }));
   }
   
   async findOne(id: string): Promise<Product> {
@@ -69,8 +81,17 @@ export class ProductsService {
   product = await this.productRepository.findOneBy({ title: id.toLowerCase() });
   if (!product)
     throw new NotFoundException(`Productor with id ${id} not found`)
-    return  product;
+    return product
   }
+
+  async finOnePlain(term: string) {
+    const { images = [], ...rest } = await this.findOne(term);
+    return {
+      ...rest,
+      images: images.map(image => image.url)
+    }
+  }
+
 
   async update(id: string, updateProductDto: UpdateProductDto) {
    const { images = [],...toUpdate } = updateProductDto;
