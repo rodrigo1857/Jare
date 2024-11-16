@@ -1,7 +1,6 @@
 
 
 export const fileFilter = (req: Express.Request, file: Express.Multer.File, callback: Function) => {
-
     if (!file) {
         req['fileValidationError'] = 'File is empty';
         return callback(null, false);

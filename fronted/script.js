@@ -1,12 +1,10 @@
-const uploadButton = document.getElementById('uploadImages');
+
 const imageUrlsField = document.getElementById('imageUrls');
 let uploadedImageUrls = [];
 
-uploadButton.addEventListener('click', async function (event) {
+document.getElementById('uploadImages').addEventListener('click', async function (event) {
     // Evitar cualquier comportamiento predeterminado, incluyendo recarga del formulario
     event.preventDefault();
-    event.stopPropagation();  // Evita que el evento se propague hacia el formulario
-
     const imagesInput = document.getElementById('images');
     const files = imagesInput.files;
 
@@ -31,7 +29,7 @@ uploadButton.addEventListener('click', async function (event) {
         const result = await response.json();
         
 
-        
+        console.log(result);
         if (response.ok) {
             // Asegurarse de que el backend devuelva las URLs de las imágenes subidas
             uploadedImageUrls = [result.secureUrl] || [];

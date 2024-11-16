@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Param, UploadedFile, UseInterceptors, BadRequestException, Logger, Res, Req } from '@nestjs/common';
+import { Controller, Get, Post, Param, UploadedFile, UseInterceptors, BadRequestException, Logger, Res, Req, UploadedFiles } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { fileFilter ,fileNamer} from './helpers/index';
 import { diskStorage } from 'multer';
 import { Response } from 'express';
@@ -26,27 +26,36 @@ export class FilesController {
 
 
   @Post('product')
-  @UseInterceptors(FileInterceptor('images',{
+  @UseInterceptors(FilesInterceptor('images',5,{
+    
     fileFilter: fileFilter,
     //limits:{fileSize: 1024*1024*5},
     storage:diskStorage({
       destination:'./static/products',
       filename: fileNamer
-    })
+    }),
   }))
-  uploadProducImage(@UploadedFile()file: Express.Multer.File,@Req() req){
+  uploadProducImage(@UploadedFiles()images: Express.Multer.File[],@Req() req){
     Logger.log('======== CARGANDO EL ARCHIVO ========');
     if (req['fileValidationError']) {
       throw new BadRequestException(req['fileValidationError']);
     }
 
-    if (!file) {
-      throw new BadRequestException('Make sure that file is an image');
+    
+    if (!images) {
+   throw new BadRequestException('Make sure that file is an image');
     }
+    
+    const secureUrl = [];
+    images.forEach(image => {
+      console.log((image.originalname));
+      secureUrl.push(`${this.configService.get('HOST_API')}/files/product/${image.filename}`);
+    }); 
     Logger.log(" ======== ARCHIVO CARGADO ========")
-    const secureUrl = `${this.configService.get('HOST_API')}/files/product/${file.filename}`;
+    
+
     return {
-      secureUrl,
+      urls:secureUrl
     };
   }
 
