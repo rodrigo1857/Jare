@@ -18,14 +18,15 @@ export class FilesController {
   findProductImage(
     @Res() res: Response,
     @Param('imageName') imageName: string){
-    Logger.log('===== OBTENER ARCHIVO === ');
+    Logger.log('======== OBTENER ARCHIVO ======== ');
     const path = this.filesService.getStaticProductImage(imageName);
+    Logger.log('======== ARCHIVO ENCONTRADO ======== ');
     res.sendFile(path);
   }
 
 
   @Post('product')
-  @UseInterceptors(FileInterceptor('file',{
+  @UseInterceptors(FileInterceptor('images',{
     fileFilter: fileFilter,
     //limits:{fileSize: 1024*1024*5},
     storage:diskStorage({
@@ -34,7 +35,7 @@ export class FilesController {
     })
   }))
   uploadProducImage(@UploadedFile()file: Express.Multer.File,@Req() req){
-    Logger.log('===== CARGANDO EL ARCHIVO=== ');
+    Logger.log('======== CARGANDO EL ARCHIVO ========');
     if (req['fileValidationError']) {
       throw new BadRequestException(req['fileValidationError']);
     }
@@ -42,7 +43,7 @@ export class FilesController {
     if (!file) {
       throw new BadRequestException('Make sure that file is an image');
     }
-
+    Logger.log(" ======== ARCHIVO CARGADO ========")
     const secureUrl = `${this.configService.get('HOST_API')}/files/product/${file.filename}`;
     return {
       secureUrl,

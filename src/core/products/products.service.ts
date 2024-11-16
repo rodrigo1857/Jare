@@ -26,6 +26,7 @@ export class ProductsService {
   ) {}  
 
   async create(createProductDto: CreateProductDto) {
+    Logger.log("======== CREANDO PRODUCTO ========")
     try {
         const { images = [], category, title, ...productDetail } = createProductDto;
 
@@ -51,6 +52,7 @@ export class ProductsService {
         });
 
         await this.productRepository.save(product);
+        Logger.log("======== PRODUCTO CREADO ========")
         return { message: 'Product created successfully' };
     } catch (error) {
         this.logger.error('Error creating product:', error.message);
@@ -105,6 +107,7 @@ export class ProductsService {
   async remove(id: string) {
     const product = await this.findOne(id);
     await this.productRepository.remove(product);
+    Logger.log("======== PRODUCTO ELIMINADO ========")
     return { message: 'Product deleted successfully' };
   }
 
