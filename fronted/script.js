@@ -1,10 +1,8 @@
+document.addEventListener('DOMContentLoaded', () => {
+document.getElementById('productForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Evitar recarga de página
 
-const imageUrlsField = document.getElementById('imageUrls');
-let uploadedImageUrls = [];
-
-document.getElementById('uploadImages').addEventListener('click', async function (event) {
-    // Evitar cualquier comportamiento predeterminado, incluyendo recarga del formulario
-    event.preventDefault();
+    const form = event.target;
     const imagesInput = document.getElementById('images');
     const files = imagesInput.files;
 
@@ -13,43 +11,38 @@ document.getElementById('uploadImages').addEventListener('click', async function
         return;
     }
 
-    // Crear el FormData para enviar las imágenes
+    let uploadedImageUrls = [];
+
+    // Subir imágenes primero
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) {
         formData.append('images', files[i]);
     }
 
     try {
-        // Enviar las imágenes al servidor
-        const response = await fetch('http://localhost:3000/joyeria/files/product', {
+        const imageResponse = await fetch('http://localhost:3000/joyeria/files/product', {
             method: 'POST',
             body: formData,
         });
 
-        const result = await response.json();
-        
+        const imageResult = await imageResponse.json();
 
-        console.log(result);
-        if (response.ok) {
-            // Asegurarse de que el backend devuelva las URLs de las imágenes subidas
-            uploadedImageUrls = [result.secureUrl] || [];
-            //imageUrlsField.value = uploadedImageUrls.join(', ');  // Mostrar URLs en el campo correspondiente
-            alert('Imagen subida correctamente y URL añadida.');
+        if (imageResponse.ok) {
+            uploadedImageUrls = Array.isArray(imageResult.secureUrl)
+                ? imageResult.secureUrl
+                : [imageResult.secureUrl];
+            console.log('Imágenes subidas:', uploadedImageUrls);
         } else {
-            alert(`Error al subir imagen: ${result.message}`);
+            alert(`Error al subir imágenes: ${imageResult.message}`);
+            return;
         }
     } catch (error) {
         console.error('Error al subir imágenes:', error);
         alert('Hubo un error al subir las imágenes.');
+        return;
     }
-});
 
-document.getElementById('productForm').addEventListener('submit', async function (event) {
-    // Evitar que se envíe el formulario y recargue la página
-    event.preventDefault();
-    console.log(uploadedImageUrls);
-
-    const form = event.target;
+    // Preparar datos del producto
     const productData = {
         title: form.title.value,
         description: form.description.value,
@@ -58,27 +51,33 @@ document.getElementById('productForm').addEventListener('submit', async function
         sizes: form.sizes.value.split(',').map(size => parseInt(size.trim())),
         gender: form.gender.value,
         category: form.category.value,
-        images: uploadedImageUrls  
+        images: uploadedImageUrls // Usar las URLs subidas
     };
-    console.log('Datos del producto:', productData);
 
+    console.log('Datos del producto a enviar:', productData);
+
+    // Enviar datos del producto
     try {
         const response = await fetch('http://localhost:3000/joyeria/products', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(productData)
+            body: JSON.stringify(productData),
         });
 
         const result = await response.json();
+
         if (response.ok) {
             document.getElementById('responseMessage').textContent = 'Producto creado con éxito.';
+            alert('Producto creado con éxito.');
+            form.reset(); // Limpiar el formulario
         } else {
             document.getElementById('responseMessage').textContent = `Error: ${result.message}`;
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error al enviar el formulario:', error);
         document.getElementById('responseMessage').textContent = 'Hubo un error al enviar el formulario.';
     }
+});
 });
