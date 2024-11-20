@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+
 document.getElementById('productForm').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Evitar recarga de página
+    event.preventDefault();
 
     const form = event.target;
     const imagesInput = document.getElementById('images');
@@ -20,10 +20,10 @@ document.getElementById('productForm').addEventListener('submit', async function
     }
 
     try {
-        const imageResponse = await fetch('http://localhost:3000/joyeria/files/product', {
-            method: 'POST',
-            body: formData,
-        });
+            const imageResponse = await fetch('http://localhost:3000/joyeria/files/product', {
+                method: 'POST',
+                body: formData,
+            });
 
         const imageResult = await imageResponse.json();
 
@@ -71,7 +71,6 @@ document.getElementById('productForm').addEventListener('submit', async function
         if (response.ok) {
             document.getElementById('responseMessage').textContent = 'Producto creado con éxito.';
             alert('Producto creado con éxito.');
-            form.reset(); // Limpiar el formulario
         } else {
             document.getElementById('responseMessage').textContent = `Error: ${result.message}`;
         }
@@ -79,5 +78,4 @@ document.getElementById('productForm').addEventListener('submit', async function
         console.error('Error al enviar el formulario:', error);
         document.getElementById('responseMessage').textContent = 'Hubo un error al enviar el formulario.';
     }
-});
 });
