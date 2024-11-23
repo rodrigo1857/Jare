@@ -27,7 +27,10 @@ export class AuthService {
         password: bcrypt.hashSync(password,10)
       }
         );
-      console.log(user);
+
+      user.token_app = this.getJwtToken({ id: user.id });
+      user.refreshtoken = this.getRefreshToken({ id: user.id });
+    
       await this.userRepository.save(user); 
       delete user.password;
       return {
@@ -58,7 +61,13 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales no son correctas por la contraseña')
     
     const refreshToken = this.getRefreshToken({ id: user.id });
+    user.token_app = this.getJwtToken({ id: user.id });
     user.refreshtoken = refreshToken;
+    
+    await this.userRepository.update(user.id, {
+      refreshtoken: user.refreshtoken,
+      token_app: user.token_app,
+    });
     return {
       token: this.getJwtToken({id:user.id}),
       refreshToken,
