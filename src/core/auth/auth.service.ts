@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './entities/interface';
 import { LoginUserDto } from './dto/login-user.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 @Injectable()
 export class AuthService {
 
@@ -26,11 +27,13 @@ export class AuthService {
         password: bcrypt.hashSync(password,10)
       }
         );
+      console.log(user);
       await this.userRepository.save(user); 
       delete user.password;
       return {
         ...user,
-        token: this.getJwtToken({id:user.id})
+        token: this.getJwtToken({id:user.id}),
+        refreshToken: this.getRefreshToken({ id: user.id }),
       };
     } catch (error) {
       this.HandleError(error)
@@ -54,9 +57,11 @@ export class AuthService {
     if(!bcrypt.compareSync(password,user.password))
       throw new UnauthorizedException('Credenciales no son correctas por la contraseña')
     
+    const refreshToken = this.getRefreshToken({ id: user.id });
+    user.refreshtoken = refreshToken;
     return {
-      ...user,
-      token: this.getJwtToken({id:user.id})
+      token: this.getJwtToken({id:user.id}),
+      refreshToken,
     };
  
 }
@@ -65,6 +70,29 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
         return token;
 
+  }
+
+  private getRefreshToken(payload: JwtPayload): string {
+    return this.jwtService.sign(payload, { expiresIn: '20d' });
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    const { refreshToken } = refreshTokenDto;
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const user = await this.userRepository.findOne({ where: { id: payload.id } });
+
+      if (!user || user.refreshtoken !== refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      return {
+        token: this.getJwtToken({ id: user.id }),
+        refreshToken: this.getRefreshToken({ id: user.id }),
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   private HandleError(error:any): never{

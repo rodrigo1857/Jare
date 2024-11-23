@@ -34,6 +34,11 @@ export class User {
     )
     token_app: string
 
+    @Column('text',{
+        unique: true}
+    )   
+    refreshtoken?: string;
+
     @Column('text', {
         array: true,
         default: ['user']

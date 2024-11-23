@@ -8,6 +8,7 @@ import { ValidRoles } from './entities/interface';
 import { AuthGuard } from '@nestjs/passport';
 import { UserRoleGuard } from './entities/guards/user-role.guard';
 import { IncomingHttpHeaders } from 'http';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +22,11 @@ export class AuthController {
   @Post('login')
   loginUser(@Body() LoginUserDto: LoginUserDto) {
     return this.authService.login(LoginUserDto);
+  }
+
+  @Post('refresh-token')
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refreshToken(refreshTokenDto);
   }
 
   
