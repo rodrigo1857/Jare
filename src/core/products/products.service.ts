@@ -72,9 +72,22 @@ export class ProductsService {
       }
     });
     
-    return products.map(({images,...rest})=>({
+    const productsWithCategories = await Promise.all(
+      products.map(async (product) => {
+        const productCategory = await this.productCategoryRepository.findOne({
+          where: { id: product.id_type_product },
+        });
+        return {
+          ...product,
+          category: productCategory,
+        };
+      })
+    );
+  
+    return productsWithCategories.map(({ images, category, ...rest }) => ({
       ...rest,
-      images:images.map(image=>image.url)
+      category,
+      images: images.map((image) => image.url),
     }));
   }
   
