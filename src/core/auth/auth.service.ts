@@ -34,9 +34,7 @@ export class AuthService {
       await this.userRepository.save(user); 
       delete user.password;
       return {
-        ...user,
-        token: this.getJwtToken({id:user.id}),
-        refreshToken: this.getRefreshToken({ id: user.id }),
+        ...user
       };
     } catch (error) {
       this.HandleError(error)
