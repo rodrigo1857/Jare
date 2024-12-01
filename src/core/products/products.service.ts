@@ -124,7 +124,7 @@ export class ProductsService {
 
 
     try {
-
+      console.log(product);
       if (images) {
         await queryRunner.manager.delete(ProductImage, { id_image: updateProduct.id_images });
         updateProduct.images = images.map(
