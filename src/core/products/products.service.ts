@@ -5,8 +5,8 @@ import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductImage } from './entities/product-image.entity';
-import { ProductCategory } from './entities/product-category.entity';
 import { PaginationDTO } from 'src/common/utils/pagination.dto';
+import { Category } from '../category/entities/category.entity';
 
 
 
@@ -21,8 +21,8 @@ export class ProductsService {
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
 
-    @InjectRepository(ProductCategory)
-    private readonly productCategoryRepository: Repository<ProductCategory>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
 
     private readonly dataSource: DataSource,
   ) {}  
@@ -33,7 +33,7 @@ export class ProductsService {
         const { images = [], category, title, ...productDetail } = createProductDto;
 
         // Busca la categoría
-        const productCategory = await this.productCategoryRepository.findOne({
+        const productCategory = await this.categoryRepository.findOne({
             where: { category: category }
         });
 
@@ -76,7 +76,7 @@ export class ProductsService {
     
     const productsWithCategories = await Promise.all(
       products.map(async (product) => {
-        const productCategory = await this.productCategoryRepository.findOne({
+        const productCategory = await this.categoryRepository.findOne({
           where: { id: product.id_type_product },
         });
         return {
