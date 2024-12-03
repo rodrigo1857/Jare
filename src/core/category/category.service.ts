@@ -3,8 +3,9 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
+import { ProductImage } from '../products/entities/product-image.entity';
 
 @Injectable()
 export class CategoryService {
@@ -12,6 +13,9 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+
+    @InjectRepository(ProductImage)
+    private readonly productImageRepository: Repository<ProductImage>
 
   ) {}
   async create(createCategoryDto: CreateCategoryDto) {
@@ -21,6 +25,7 @@ export class CategoryService {
         id_images: randomUUID()
       });
       await this.categoryRepository.save(categoryDetail);
+      await this.productImageRepository.save({url:createCategoryDto.url_image,id_image:categoryDetail.id_images});
       return { message: 'Category created successfully' };
     } catch (error) {
       this.logger.error('Error creating category:', error.message);

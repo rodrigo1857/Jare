@@ -12,14 +12,17 @@ export class ProductImage{
     @Column('text')
     url: string ;
 
-    @ManyToOne(
-        () => Product,
-        (product)=> product.images,
-        {
-          onDelete:'CASCADE'  
-        }
-    )
-    @JoinColumn({ name: 'id_image' , referencedColumnName: 'id_images' }) // referenciar a otra columna que no sea la llave primaria 
-    id_image: Product
+    @Column('text')
+    id_image: string;
+
+    // @ManyToOne(
+    //     () => Product,
+    //     (product)=> product.images,
+    //     {
+    //       onDelete:'CASCADE'  
+    //     }
+    // )
+    // @JoinColumn({ name: 'id_image' , referencedColumnName: 'id_images' }) // referenciar a otra columna que no sea la llave primaria 
+    // id_image: Product
 
 }
