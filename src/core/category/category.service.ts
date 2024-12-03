@@ -19,6 +19,7 @@ export class CategoryService {
 
   ) {}
   async create(createCategoryDto: CreateCategoryDto) {
+    Logger.log("======== CREANDO CATEGORY ========")
     try {
       const categoryDetail = this.categoryRepository.create({
         ...createCategoryDto,
@@ -26,6 +27,7 @@ export class CategoryService {
       });
       await this.categoryRepository.save(categoryDetail);
       await this.productImageRepository.save({url:createCategoryDto.url_image,id_image:categoryDetail.id_images});
+    Logger.log("======== CATEGORY CREADA ========")
       return { message: 'Category created successfully' };
     } catch (error) {
       this.logger.error('Error creating category:', error.message);

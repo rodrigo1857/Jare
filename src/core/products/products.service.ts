@@ -7,6 +7,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductImage } from './entities/product-image.entity';
 import { PaginationDTO } from 'src/common/utils/pagination.dto';
 import { Category } from '../category/entities/category.entity';
+import { randomUUID } from 'crypto';
 
 
 
@@ -43,16 +44,15 @@ export class ProductsService {
         }
 
         
-
         // Crea el producto
+        const id_images = randomUUID();
         const product = this.productRepository.create({
             ...productDetail,
             title: (title.toLocaleLowerCase().replaceAll(" ","-")),
-            id_type_product: productCategory.id , 
-            images: images.map(image => this.productImageRepository.create({ url: image })),
-            
+            id_type_product: productCategory.id,
+            id_images: id_images,
+            images: images.map(image => this.productImageRepository.create({ url: image, id_image: id_images }))
         });
-
         await this.productRepository.save(product);
         Logger.log("======== PRODUCTO CREADO ========")
         return { message: 'Product created successfully' };
@@ -65,6 +65,7 @@ export class ProductsService {
 
 
   async findAll(paginationDTO: PaginationDTO) {
+    Logger.log("======== OBTENIENDO PRODUCTOS ========")
     const{limit = 10 , offset = 0} = paginationDTO;
     const products = await this.productRepository.find({
       take : limit,
@@ -95,6 +96,7 @@ export class ProductsService {
   
   async findOne(id: string): Promise<Product> {
   let product: Product;
+  Logger.log("======== BUSCANDO PRODUCTO ========")
   product = await this.productRepository.findOneBy({ title: id.toLowerCase() });
   if (!product)
     throw new NotFoundException(`Productor with id ${id} not found`)
@@ -103,6 +105,7 @@ export class ProductsService {
 
   async finOnePlain(term: string) {
     const { images = [], ...rest } = await this.findOne(term);
+    Logger.log("======== PRODUCTO ENCONTRADO ========")
     return {
       ...rest,
       images: images.map(image => image.url)
@@ -111,6 +114,7 @@ export class ProductsService {
 
 
   async update(title: string, updateProductDto: UpdateProductDto) {
+  Logger.log("======== ACTUALIZANDO PRODUCTO ========")
    const { images = [],...toUpdate } = updateProductDto;
    const product = await this.productRepository.findOneBy({ title: title.toLowerCase() });   
    const updateProduct = await this.productRepository.preload({id:product.id, ...toUpdate});
@@ -124,7 +128,6 @@ export class ProductsService {
 
 
     try {
-      console.log(product);
       if (images) {
         await queryRunner.manager.delete(ProductImage, { id_image: updateProduct.id_images });
         updateProduct.images = images.map(
@@ -134,6 +137,7 @@ export class ProductsService {
       await queryRunner.manager.save(updateProduct);
       await queryRunner.commitTransaction();
       await queryRunner.release();
+      Logger.log("======== PRODUCTO ACTUALIZADO ========")
       return this.finOnePlain(title);
     } catch (error) {
       await queryRunner.rollbackTransaction();
