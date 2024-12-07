@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateAuthDto } from './dto/create-user.dto';
@@ -19,11 +19,13 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ){}
   async create(createAuthDto: CreateAuthDto) {
+    Logger.log('======== CREANDO USUARIO ========')
     try {
-      const {password, ...userData} = createAuthDto;
+      const {password,username,usertype} = createAuthDto;
 
       const user = this.userRepository.create({
-        ...userData,
+        username,
+        roles: usertype?[usertype]:['user'],
         password: bcrypt.hashSync(password,10)
       }
         );
@@ -33,9 +35,11 @@ export class AuthService {
     
       await this.userRepository.save(user); 
       delete user.password;
+    Logger.log('======== USUARIO CREADO ========')
       return {
         ...user
       };
+      
     } catch (error) {
       this.HandleError(error)
     }
@@ -45,6 +49,7 @@ export class AuthService {
 
   async login(loginUserDto: LoginUserDto) {
 
+    Logger.log('======== LOGIN USUARIO ========')
     const {username,password} = loginUserDto;
     const user = await this.userRepository.findOne({
       where:{username},
@@ -66,6 +71,7 @@ export class AuthService {
       refreshtoken: user.refreshtoken,
       token_app: user.token_app,
     });
+    Logger.log('======== ACCESO EXITOSO ========')
     return {
       token: this.getJwtToken({id:user.id}),
       refreshToken,

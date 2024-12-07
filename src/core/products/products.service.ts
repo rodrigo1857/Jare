@@ -151,6 +151,7 @@ export class ProductsService {
   async remove(id: string) {
     const product = await this.findOne(id);
     await this.productRepository.remove(product);
+    await this.productImageRepository.delete({ id_image: product.id_images });
     Logger.log("======== PRODUCTO ELIMINADO ========")
     return { message: 'Product deleted successfully' };
   }
