@@ -6,6 +6,7 @@ import { Category } from './entities/category.entity';
 import { In, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ProductImage } from '../products/entities/product-image.entity';
+import { url } from 'inspector';
 
 @Injectable()
 export class CategoryService {
@@ -25,10 +26,13 @@ export class CategoryService {
         ...createCategoryDto,
         id_images: randomUUID()
       });
-      await this.categoryRepository.save(categoryDetail);
+      const category = await this.categoryRepository.save({
+        ...categoryDetail,
+        url: createCategoryDto.url_image
+      });
       await this.productImageRepository.save({url:createCategoryDto.url_image,id_image:categoryDetail.id_images});
     Logger.log("======== CATEGORY CREADA ========")
-      return { message: 'Category created successfully' };
+      return { category, url };
     } catch (error) {
       this.logger.error('Error creating category:', error.message);
       this.handleExceptions(error);
@@ -41,8 +45,20 @@ export class CategoryService {
     return { categories, total };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number) {
+    const category = await this.categoryRepository.findOne({ where: { id } });
+  
+    if (!category) {
+      throw new BadRequestException('Category not found');
+    }
+  
+    const product = await this.productImageRepository.findOne({ where: { id_image: category.id_images } });  
+    console.log(product)
+  
+    return {
+      ...category,
+      product:product.url
+    };
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {

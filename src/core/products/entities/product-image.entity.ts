@@ -12,7 +12,10 @@ export class ProductImage{
     @Column('text')
     url: string ;
 
-    @ManyToOne(
+    @Column('text')
+    id_image: string;
+
+    /*@ManyToOne(
         () => Product,
         (product)=> product.images,
         {
@@ -20,7 +23,7 @@ export class ProductImage{
         }
     )
     @JoinColumn({ name: 'id_image' , referencedColumnName: 'id_images' }) // referenciar a otra columna que no sea la llave primaria 
-    id_image: string;
+    id_image: string;*/
 
     // @ManyToOne(
     //     () => Product,

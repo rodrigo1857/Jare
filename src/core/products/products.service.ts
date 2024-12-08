@@ -86,12 +86,16 @@ export class ProductsService {
         };
       })
     );
-  
-    return productsWithCategories.map(({ images, category, ...rest }) => ({
-      ...rest,
-      category,
-      images: images.map((image) => image.url),
-    }));
+  const totalItems = await this.productRepository.count();
+
+  return {
+    totalItems,
+    products: productsWithCategories.map(({ images, category, ...rest }) => ({
+    ...rest,
+    category,
+    images: images.map((image) => image.url),
+    })),
+  };
   }
   
   async findOne(id: string): Promise<Product> {
