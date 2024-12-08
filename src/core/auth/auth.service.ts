@@ -26,6 +26,7 @@ export class AuthService {
       const user = this.userRepository.create({
         username,
         roles: usertype?[usertype]:['user'],
+        id_type_user: usertype =='admin'? 1:2,
         password: bcrypt.hashSync(password,10)
       }
         );

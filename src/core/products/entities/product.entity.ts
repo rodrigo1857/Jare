@@ -56,7 +56,7 @@ export class Product {
     //relaciones
      @OneToMany(
          () => ProductImage,
-         (productImage) => productImage.id_image,
+         (productImage) => productImage.image,
          { cascade: true,eager:true}
      )
      images?: ProductImage[];

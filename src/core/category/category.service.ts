@@ -42,18 +42,17 @@ export class CategoryService {
 
   async findAll() {
     const [categories, total] = await this.categoryRepository.findAndCount();
-    return { categories, total };
+    return { total,categories };
   }
 
   async findOne(id: number) {
     const category = await this.categoryRepository.findOne({ where: { id } });
-  
+
     if (!category) {
       throw new BadRequestException('Category not found');
     }
   
     const product = await this.productImageRepository.findOne({ where: { id_image: category.id_images } });  
-    console.log(product)
   
     return {
       ...category,

@@ -70,9 +70,7 @@ export class ProductsService {
     const products = await this.productRepository.find({
       take : limit,
       skip : offset,
-      relations : {
-        images:true,
-      }
+      relations: ['images'],
     });
     
     const productsWithCategories = await Promise.all(

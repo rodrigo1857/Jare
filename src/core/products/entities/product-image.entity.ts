@@ -15,7 +15,7 @@ export class ProductImage{
     @Column('text')
     id_image: string;
 
-    /*@ManyToOne(
+    @ManyToOne(
         () => Product,
         (product)=> product.images,
         {
@@ -23,16 +23,6 @@ export class ProductImage{
         }
     )
     @JoinColumn({ name: 'id_image' , referencedColumnName: 'id_images' }) // referenciar a otra columna que no sea la llave primaria 
-    id_image: string;*/
-
-    // @ManyToOne(
-    //     () => Product,
-    //     (product)=> product.images,
-    //     {
-    //       onDelete:'CASCADE'  
-    //     }
-    // )
-    // @JoinColumn({ name: 'id_image' , referencedColumnName: 'id_images' }) // referenciar a otra columna que no sea la llave primaria 
-    // id_image: Product
+    image: Product;
 
 }
