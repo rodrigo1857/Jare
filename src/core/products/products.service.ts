@@ -85,9 +85,10 @@ export class ProductsService {
       })
     );
   const totalItems = await this.productRepository.count();
-
+  const numeropag = Math.ceil(totalItems / limit);
   return {
     totalItems,
+    numeropag,
     products: productsWithCategories.map(({ images, category, ...rest }) => ({
     ...rest,
     category,
