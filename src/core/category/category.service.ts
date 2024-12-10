@@ -64,8 +64,18 @@ export class CategoryService {
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    Logger.log("======== ELIMINANDO CATEGORIA========")
+    try {
+      const product = await this.findOne(id);
+      await this.categoryRepository.delete(id);
+      await this.productImageRepository.delete({id_image:product.id_images});
+      Logger.log("======== CATEGORIA ELIMINADA ========")
+      return `This action removes a #${id} category`;
+    } catch (error) {
+      this.logger.error('Error removing category:', error.message);
+      this.handleExceptions(error);
+    }
   }
 
 
