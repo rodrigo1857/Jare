@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -60,14 +60,42 @@ export class CategoryService {
     };
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    Logger.log("======== ACTUALIZANDO CATEGORY ========")
+    const category = await this.categoryRepository.preload({
+      id,
+      ...updateCategoryDto,
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+
+    if (updateCategoryDto.url_image) {
+      const productImage = await this.productImageRepository.findOne({ where: { id_image: category.id_images } });
+      if (productImage) {
+        productImage.url = updateCategoryDto.url_image;
+        await this.productImageRepository.save(productImage);
+      } else {
+        await this.productImageRepository.save({ url: updateCategoryDto.url_image, id_image: category.id_images });
+      }
+    }
+
+    try {
+      await this.categoryRepository.save(category);
+      Logger.log("======== CATEGORY ACTUALIZADA ========")
+      return category;
+    } catch (error) {
+      this.logger.error('Error updating category:', error.message);
+      this.handleExceptions(error);
+    }
   }
 
   async remove(id: number) {
     Logger.log("======== ELIMINANDO CATEGORIA========")
-    try {
-      const product = await this.findOne(id);
+    const product = await this.findOne(id);
+    if(!product) throw new NotFoundException('Category not found');
+    try {  
       await this.categoryRepository.delete(id);
       await this.productImageRepository.delete({id_image:product.id_images});
       Logger.log("======== CATEGORIA ELIMINADA ========")
