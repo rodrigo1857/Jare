@@ -43,7 +43,7 @@ create table if not exists core.tp_person
 alter table core.tp_person
     owner to postgres;
 
-
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 --------- 4 ----------
 
 create table if not exists core.tp_products
@@ -92,14 +92,11 @@ alter table core.tp_user
 ---------- 6 --------
 create table if not exists core.ts_images
 (
-    id       integer default nextval('core.ts_products_images_id_seq'::regclass) not null
+    id     serial
         constraint ts_products_images_pkey
             primary key,
     url      text                                                                not null,
     id_image uuid                                                                not null
-        constraint ts_images_tp_products_id_images_fk
-            references core.tp_products (id_images)
-            on delete cascade
 );
 
 alter table core.ts_images
