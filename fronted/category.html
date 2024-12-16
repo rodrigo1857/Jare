@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Categoría</title>
+    <link rel="stylesheet" href="stylesCategory.css">
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Crear Nueva Categoría</h2>
+        <form id="categoryForm">
+            <!-- Campo de Categoría -->
+            <div class="form-group">
+                <label for="category">Categoría:</label>
+                <input type="text" id="category" name="category" required minlength="2">
+                <small id="categoryError" class="error-message"></small>
+            </div>
+
+            <!-- Campo de URL de Imagen -->
+            <div class="form-group">
+                <label for="url_image">URL de la Imagen:</label>
+                <input type="url" id="url_image" name="url_image" required>
+                <small id="urlImageError" class="error-message"></small>
+            </div>
+
+            <!-- Botón de Enviar -->
+            <button type="submit">Crear Categoría</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
